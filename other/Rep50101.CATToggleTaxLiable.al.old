@@ -1,0 +1,71 @@
+report 50101 "CAT Tax Liable Toggle"
+{
+    //UsageCategory = Administration;
+    //ApplicationArea = All;
+    ProcessingOnly = true;
+    //Permissions = 
+
+    dataset
+    {
+        dataitem(PurInvHeader; "Purch. Inv. Header")
+        {
+            trigger OnPreDataItem()
+            begin
+                IF NOT PurInvHdr.GET(DocNo) THEN
+                    error('%1 is not a valid Posted Purchase Invoice No.', DocNo);
+                SETRANGE("No.", DocNo);
+            end;
+
+
+            trigger OnAfterGetRecord()
+            var
+                myInt: Integer;
+            begin
+                "Tax Liable" := false;
+                modify;
+            end;
+
+        }
+    }
+
+    requestpage
+    {
+        SaveValues = true;
+        layout
+        {
+            area(Content)
+            {
+                group(GroupName)
+                {
+                    field(DocNo; DocNo)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Purchase Invoice No.';
+
+                    begin
+                        IF NOT PurInvHdr.GET(DocNo) THEN
+                            error('%1 is not a valid Posted Purchase Invoice No.',DocNo);
+                    end;
+                        
+                    }
+                }
+            }
+        }
+    
+        actions
+        {
+            area(processing)
+            {
+                action(ActionName)
+                {
+                    ApplicationArea = All;
+                    
+                }
+            }
+        }
+    }
+    
+    var
+        DocNo: Code[20];        
+        PurInvHdr: Record "Purch. Inv. Header";
+}
