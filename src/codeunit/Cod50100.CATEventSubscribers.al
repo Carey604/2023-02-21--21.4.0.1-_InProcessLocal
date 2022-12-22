@@ -5,6 +5,10 @@ codeunit 50100 "CAT Event Subscribers"
     // CAT.003 2021-01-22 CL - Purchase Requisition. Change event subscriber to codeunit 97 OnBeforePurchOrderHeaderModify because it marked for removal.
     // CAT.004 2021-03-02 CL - Purchase Requisition. Use new "Purchases & Payables Setup"."CAT Requisition Quote Nos.".
     // CAT.005 2022-03-07 CL - item posting - copy source item no to gl entry.
+    // CAT.006 2022-11-30 CL - Purchase Header. Do not validate dimensions when Purchaser Code is updated.
+    //  - OnBeforeReleasePurchaseDoc - check fields
+    //  - OnBeforePurchQuoteToOrder - check fields
+
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Job Jnl. Lines", 'OnAfterTransferTimeSheetDetailToJobJnlLine', '', false, false)]
     local procedure Rep952SuggestJobJnlLines_OnAfterTransferTimeSheetDetailToJobJnlLine(var JobJournalLine: Record "Job Journal Line"; JobJournalTemplate: Record "Job Journal Template"; var TempTimeSheetLine: Record "Time Sheet Line" temporary; TimeSheetDetail: Record "Time Sheet Detail"; JobJournalBatch: Record "Job Journal Batch")
@@ -175,6 +179,41 @@ codeunit 50100 "CAT Event Subscribers"
     end;
     //<<CAT.005
 
+    //>>CAT.006 - bypass updating dims when purchaser code changes
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterInitDefaultDimensionSources', '', false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var PurchaseHeader: Record "Purchase Header"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer);
+    begin
+        if FieldNo = PurchaseHeader.FieldNo("Purchaser Code") then
+            PurchaseHeader."CAT Purch. Code Dim. IsHandled" := true
+        else
+            PurchaseHeader."CAT Purch. Code Dim. IsHandled" := false;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeCreateDim', '', false, false)]
+    local procedure OnBeforeCreateDim(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]);
+    begin
+        IsHandled := PurchaseHeader."CAT Purch. Code Dim. IsHandled";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Purchase Document", 'OnBeforeReleasePurchaseDoc', '', false, false)]
+    local procedure OnBeforeReleasePurchaseDoc(var PurchaseHeader: Record "Purchase Header"; PreviewMode: Boolean; var SkipCheckReleaseRestrictions: Boolean; var IsHandled: Boolean);
+    var
+        CATPurchaseTypeErrTxt: Label 'cannot be blank';
+    begin
+        If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+            PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order (Yes/No)", 'OnBeforePurchQuoteToOrder', '', false, false)]
+    local procedure OnBeforePurchQuoteToOrder(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean);
+    var
+        CATPurchaseTypeErrTxt: Label 'cannot be blank';
+    begin
+        If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+            PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+    end;
+
+    //<<CAT.006
     var
 
 }

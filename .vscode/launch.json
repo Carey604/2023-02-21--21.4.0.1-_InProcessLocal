@@ -7,8 +7,8 @@
             "type": "al",
             "tenant": "c95fd818-8c65-4a3b-a66c-26d9f67d5bf3",
             "environmentType": "Sandbox",
-            "environmentName": "sandboxv21",
-            "startupObjectId": 22,
+            "environmentName": "SandboxCATDEV20221104",
+            "startupObjectId": 9307, //purchase order list
             "startupObjectType": "Page",
             "breakOnError": "All",
             "launchBrowser": true,

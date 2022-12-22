@@ -7,6 +7,12 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
     // - new fields
     // CAT.003 2021-08-19 CL - add field 50012
     // CAT.004 2022-03-30 CL - copy notes when changing requisition to quote
+    // CAT.005 2022-11-25 CL - purchase approval amounts 
+    // CAT.006 2022-11-30 CL - remove dimension update when Purchase Code is changed. Recaption field. 
+    // - New "Purchase Requisition No." field to store original "No."" value when requisition is converted to quote.
+    // - new field "CAT Purch. Order Status Code"
+    // - new CAT Purchase Type field
+
     fields
     {
         field(50000; "CAT Blanket Order Version No."; Integer)
@@ -69,10 +75,84 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
         //>>CAT.003
         field(50012; "CAT Fiix Purchase Order No."; Text[250])
         {
-            Caption = 'Fiix PO#';
+            //--CAT.006Caption = 'Fiix PO#';
+            Caption = 'Fiix PO/MOC/WO#'; //++CAT.006;
             DataClassification = ToBeClassified;
         }
         //<<CAT.003
+        //>>CAT.005
+        field(50013; "CAT Approved Amount"; Decimal)
+        {
+            Caption = 'Approved Amount';
+            DataClassification = CustomerContent;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+        }
+        field(50014; "CAT Amt. Over Approved Amt."; Decimal)
+        {
+            Caption = 'Amount Over Approved Amount';
+            DataClassification = CustomerContent;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+        }
+        field(50015; "CAT Line Approved Amount"; Decimal)
+        {
+            Caption = 'Line Approved Amount';
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = sum("Purchase Line"."CAT Approved Amount" WHERE("Document Type" = FIELD("Document Type"),
+                "Document No." = FIELD("No.")));
+        }
+        field(50016; "CAT Line Amt. Over Appr. Amt."; Decimal)
+        {
+            Caption = 'Line Amount Over Approved Amount';
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = sum("Purchase Line"."CAT Amt. Over Approved Amt." WHERE("Document Type" = FIELD("Document Type"),
+                "Document No." = FIELD("No.")));
+        }
+        //<<CAT.005
+        //>>CAT.006
+        field(50017; "CAT Purch. Code Dim. IsHandled"; Boolean) // New field to store value. We set it in event trigger code and then in subsequent triggers skip if true
+        {
+            Caption = 'Purchaser Code Dimension Update IsHandled';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(50018; "CAT Purchase Requisition No."; Code[20]) // New field to store requisition no. so that it is retained when requisition is copied to new PO
+        {
+            Caption = 'Purchase Requisition No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(50020; "CAT Purch. Order Status Code"; Code[20])
+        {
+            Caption = 'Purchase Order Status';
+            DataClassification = CustomerContent;
+            TableRelation = "CAT Purchase Order Status";
+        }
+        field(50030; "CAT CEIC Equipment Tag No."; Text[20])
+        {
+            Caption = 'CEIC Equipment Tag #';
+            DataClassification = CustomerContent;
+        }
+        field(50035; "CAT Purchase Type"; Enum "CAT Purchase Type")
+        {
+            Caption = 'Purchase Type';
+            DataClassification = CustomerContent;
+        }
+        //<<CAT.006
+        //>>CAT.005
+        field(50040; "CAT Previously Approved"; Boolean)
+        {
+            Caption = 'Previously Approved';
+            DataClassification = CustomerContent;
+        }
+        //<<CAT.005
     }
 
     procedure CATIncrementVersion()
@@ -228,11 +308,17 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
         FromRecRef: RecordRef;
         ToRecRef: RecordRef;
         DocumentAttachment: Codeunit CATDocumentAttachmentEvents;
+        CATPurchaseTypeErrTxt: Label 'cannot be blank'; //++CAT.006
+
     begin
         Rec.CATTestRequisition(true);
         Rec.TestField("Document Type", Rec."Document Type"::Quote);
         Rec.TestField("No.");
         Rec.TestField("CAT Requisition", true);
+        //>>CAT.006
+        if Rec."CAT Purchase Type" = Rec."CAT Purchase Type"::" " then
+            Rec.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+        //<<CAT.006
 
         //what kind of test for the user who is trying to change to quote? Put code here.
 
@@ -251,6 +337,10 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
 
         CopyDocMgt.SetProperties(true, false, false, true, true, false, false);
         CopyDocMgt.CopyPurchDoc(FromDocType::Quote, rec."No.", ToPurchHeader);
+        //>>CAT.006
+        ToPurchHeader."CAT Purchase Requisition No." := OldPurchHeader."No.";
+        ToPurchHeader.Modify();
+        //<<CAT.006
         FromRecRef.GetTable(OldPurchHeader);
         ToRecRef.GetTable(ToPurchHeader);
         DocumentAttachment.CopyAttachmentsForPostedDocs(FromRecRef, ToRecRef);//It says posted but will work

@@ -3,9 +3,10 @@
 
 page 50105 "CAT Purchase Requisitions"
 {
-    //CAT.001 2020-12-17 - new list page for Purchase Requisition fanctionality.
+    //CAT.001 2020-12-17 - new list page for Purchase Requisition functionality.
     //- is a copy of Purchase Quotes filtered on new field "CAT Requisition" and New action calls new card page.
     //- copied from page 9306. Original code is copied to bottom of this file.
+    // CAT.002 2022-12-02 CL - add fields
 
     AdditionalSearchTerms = 'rfq,request for quote,purchase requisition';
     ApplicationArea = Suite;
@@ -207,6 +208,34 @@ page 50105 "CAT Purchase Requisitions"
                     ToolTip = 'Specifies whether the record is open, waiting to be approved, invoiced for prepayment, or released to the next stage of processing.';
                     Visible = false;
                 }
+                //>>CAT.002
+                field("CAT Fiix Purchase Order No."; Rec."CAT Fiix Purchase Order No.")
+                {
+                    ApplicationArea = All;
+                    Importance = Standard;
+                    Tooltip = 'Specifies the Fiix purchase order no.';
+                }
+                field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the CEIC Equipment Tag No.';
+                }
+                field("CAT Purch. Order Status Code"; Rec."CAT Purch. Order Status Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchase order status code.';
+                }
+                field("CAT Purchase Type"; Rec."CAT Purchase Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchase type.';
+                }
+                field("CAT Purchase Requisition No."; Rec."CAT Purchase Requisition No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the No. from the original purchase requisition that was used to generate the purchase header.';
+                }
+                //<<CAT.002
             }
         }
         area(factboxes)

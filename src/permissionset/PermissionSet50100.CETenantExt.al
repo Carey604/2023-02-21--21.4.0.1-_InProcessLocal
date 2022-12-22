@@ -1,11 +1,14 @@
 permissionset 50100 "CE - Tenant Ext."
 {
+    // CAT.001 2022-12-01 CL - add tables and pages
     Assignable = true;
     Caption = 'CE - Tenant Extension';
 
     Permissions =
         table "CAT Job Group" = X,
+        table "CAT Purchase Order Status" = X, //++CAT.001
         tabledata "CAT Job Group" = RMID,
+        tabledata "CAT Purchase Order Status" = RMID, //++CAT.001
         codeunit "CAT Event Subscribers" = X,
         codeunit CATDocumentAttachmentEvents = X,
         page "CAT Approval Entries" = X,
@@ -16,6 +19,7 @@ permissionset 50100 "CE - Tenant Ext."
         page "CAT Time Sheet Line (PBI)" = X,
         page "CAT Job Groups" = X,
         page "CAT Purchase Requisition" = X,
+        page "CAT Purchase Order Status List" = X, //++CAT.001
         report "CAT Standard Purchase - Order" = X,
         report "CAT Pur. Line G/L Account Swap" = X,
         report "CAT Resource TS Approver Swap" = X,

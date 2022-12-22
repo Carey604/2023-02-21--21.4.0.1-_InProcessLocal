@@ -4,6 +4,7 @@ tableextension 50511 "CAT Purchase Line TabExt" extends "Purchase Line" //39
     // CAT.002 2020-12-09 CL 
     // - add function to change No. and 
     // CAT.003 2021-08-19 CL - add field 50502
+    // CAT.004 2022-11-25 CL - purchase approval amounts.
     fields
     {
         field(50500; "CAT Ship Date"; Date)
@@ -22,7 +23,32 @@ tableextension 50511 "CAT Purchase Line TabExt" extends "Purchase Line" //39
             DataClassification = ToBeClassified;
         }
         //<<CAT.003
+        //>>CAT.004
+        field(50503; "CAT Approved Amount"; Decimal)
+        {
+            Caption = 'Approved Amount';
+            DataClassification = CustomerContent;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+        }
+        field(50504; "CAT Amt. Over Approved Amt."; Decimal)
+        {
+            Caption = 'Amount Over Approved Amount';
+            DataClassification = CustomerContent;
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
+        }
+        //<<CAT.004
     }
+    // //>>CAT.004
+    // keys
+    // {
+    //     key(CATKey1; "Document Type", "Document No.")
+    //     {
+    //         SumIndexFields = "CAT Approved Amount", "CAT Amt. Over Approved Amt.";
+    //         }    
+    // }
+    // //<<CAT.004
     procedure CATGetDefaultLineType(): Integer
     var
         PurchSetup: Record "Purchases & Payables Setup";

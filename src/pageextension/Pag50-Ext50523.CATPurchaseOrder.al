@@ -1,7 +1,8 @@
 pageextension 50523 "CAT Purchase Order" extends "Purchase Order" //50
 {
-    //CAT.002 2020-05-12 CL - add field and actions
-    //CAT.003 2021-08-20 CL - add field
+    // CAT.002 2020-05-12 CL - add field and actions
+    // CAT.003 2021-08-20 CL - add field
+    // CAT.004 2022-12-01 CL - add fields
     layout
     {
         modify("Buy-from Contact")
@@ -40,6 +41,31 @@ pageextension 50523 "CAT Purchase Order" extends "Purchase Order" //50
         {
             Importance = Standard;
         }
+        //>>CAT.004
+        addbefore("Quote No.")
+        {
+            field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the CEIC Equipment Tag No.';
+            }
+            field("CAT Purch. Order Status Code"; Rec."CAT Purch. Order Status Code")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the purchase order status code.';
+            }
+            field("CAT Purchase Type"; Rec."CAT Purchase Type")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the purchase type.';
+            }
+            field("CAT Purchase Requisition No."; Rec."CAT Purchase Requisition No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the No. from the original purchase requisition that was used to generate the purchase header.';
+            }
+        }
+        //<<CAT.004
         addafter("Shipment Method Code")
         {
             field("CAT CATTransport Method36882"; "Transport Method")

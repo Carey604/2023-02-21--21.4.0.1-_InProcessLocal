@@ -9,6 +9,7 @@ page 50102 "CAT Purchase Requisition"
     // - Hide "CAT Assigned User Approver ID" and add "CAT Approving Manager Id".
     // - new notification when header is inserted
     // CAT.003 2021-08-20 CL - add field Fiix Purchase Order No.
+    // CAT.004 2022-12-02 CL - add fields
 
     //--CAT.001Caption = 'Purchase Quote';
     //>>CAT.001
@@ -314,6 +315,28 @@ page 50102 "CAT Purchase Requisition"
                     Tooltip = 'Specifies the Fiix purchase order no.';
                 }
                 //<<CAT.003
+                //>>CAT.004
+                field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the CEIC Equipment Tag No.';
+                }
+                field("CAT Purch. Order Status Code"; Rec."CAT Purch. Order Status Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchase order status code.';
+                }
+                field("CAT Purchase Type"; Rec."CAT Purchase Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchase type.';
+                }
+                field("CAT Purchase Requisition No."; Rec."CAT Purchase Requisition No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the No. from the original purchase requisition that was used to generate the purchase header.';
+                }
+                //<<CAT.004
                 field("CAT Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code") //copied from Invoice Details group
                 {
                     ApplicationArea = Dimensions;

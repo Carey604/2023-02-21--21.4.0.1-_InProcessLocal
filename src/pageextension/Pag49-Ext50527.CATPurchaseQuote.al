@@ -2,6 +2,7 @@ pageextension 50527 "CAT Purchase Quote" extends "Purchase Quote" //49
 {
     // CAT.002 2020-05-12 CL - add field and actions
     // CAT.003 2021-08-20 CL - add field Fiix Purchase Order No.
+    // CAT.004 2022-12-01 CL - add fields
     layout
     {
         modify("Campaign No.")
@@ -121,6 +122,28 @@ pageextension 50527 "CAT Purchase Quote" extends "Purchase Quote" //49
                 Tooltip = 'Specifies the Fiix purchase order no.';
             }
             //<<CAT.003
+            //>>CAT.004
+            field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the CEIC Equipment Tag No.';
+            }
+            field("CAT Purch. Order Status Code"; Rec."CAT Purch. Order Status Code")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the purchase order status code.';
+            }
+            field("CAT Purchase Type"; Rec."CAT Purchase Type")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the purchase type.';
+            }
+            field("CAT Purchase Requisition No."; Rec."CAT Purchase Requisition No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the No. from the original purchase requisition that was used to generate the purchase header.';
+            }
+            //<<CAT.004
         }
         //<<CAT.002
     }

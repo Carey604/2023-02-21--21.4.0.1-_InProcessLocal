@@ -2,7 +2,7 @@
   "id": "b69483e0-d395-4323-8aa4-8ad0c3f5bd9b",
   "name": "CE - Tenant Extensions",
   "publisher": "Catapult",
-  "version": "20.5.0.3",
+  "version": "21.0.0.2",
   "brief": "Carbon Engineering Tenant Extensions",
   "description": "",
   "privacyStatement": "",
@@ -26,8 +26,8 @@
     }
   ],
   "screenshots": [],
-  "platform": "20.0.0.0",
-  "application": "20.5.0.0",  
+  "platform": "21.0.0.0",
+  "application": "21.0.0.0",  
   "idRanges": [
     {
       "from": 50100,
@@ -40,5 +40,5 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "runtime":"9.2"
+  "runtime":"10.0"
 }
