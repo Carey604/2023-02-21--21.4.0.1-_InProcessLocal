@@ -1,0 +1,132 @@
+reportextension 50101 "CAT ExportElecPayments - Word" extends "ExportElecPayments - Word" //11383
+{
+    // CAT.001 2022-12-22 CL 
+    //      - std report has issues where some values are LCY and others are FCY. We want to use FCY.
+    dataset
+    {
+        modify("Gen. Journal Line")
+        {
+            trigger OnAfterAfterGetRecord()
+            var
+            begin
+                clear(CATCustomer);
+                clear(CATVendor);
+                case "Gen. Journal Line"."Account Type" of
+                    "Gen. Journal Line"."Account Type"::"Bank Account":
+                        begin
+                            case "Gen. Journal Line"."Bal. Account Type" of
+                                "Gen. Journal Line"."Bal. Account Type"::Vendor:
+                                    begin
+                                        CATVendor.Get("Gen. Journal Line"."Bal. Account No.");
+                                        CATProcessVendor("Gen. Journal Line");
+                                    end;
+                                "Gen. Journal Line"."Bal. Account Type"::Customer:
+                                    begin
+                                        CATCustomer.Get("Gen. Journal Line"."Bal. Account No.");
+                                        CATProcessCustomer("Gen. Journal Line");
+                                    end;
+                                else
+                                    "Gen. Journal Line".FieldError("Bal. Account Type");
+                            end;
+                        end;
+                    "Gen. Journal Line"."Account Type"::Vendor:
+                        begin
+                            CATVendor.Get("Gen. Journal Line"."Account No.");
+                            CATProcessVendor("Gen. Journal Line");
+                        end;
+                    "Gen. Journal Line"."Account Type"::Customer:
+                        begin
+                            CATCustomer.Get("Gen. Journal Line"."Account No.");
+                            CATProcessCustomer("Gen. Journal Line");
+                        end;
+                end;
+            end;
+        }
+        add(PageLoop)
+        {
+            column(CATVendorLedgerEntry__Remaining_Amt; -CATVendorLedgerEntry."Remaining Amount") { }
+            column(CATCustLedgerEntry__Remaining_Amt; -CATCustLedgerEntry."Remaining Amount") { }
+        }
+        add("Cust. Ledger Entry")
+        {
+            column(CATCust__Ledger_Entry_Remaining_Amount; -"Cust. Ledger Entry"."Remaining Amount") { }
+        }
+        modify("Cust. Ledger Entry")
+        {
+            trigger OnAfterAfterGetRecord()
+            var
+            begin
+                "Cust. Ledger Entry".CalcFields("Remaining Amt. (LCY)", "Remaining Amount");
+            end;
+        }
+        add("Vendor Ledger Entry")
+        {
+            column(CATVendor_Ledger_Entry_Remaining_Amount; -"Vendor Ledger Entry"."Remaining Amount") { }
+        }
+        modify("Vendor Ledger Entry")
+        {
+            trigger OnAfterAfterGetRecord()
+            var
+            begin
+                "Vendor Ledger Entry".CalcFields("Remaining Amt. (LCY)", "Remaining Amount");
+            end;
+        }
+
+        add(CustomerInfo)
+        {
+            column(CATCust_Remaining_Amt; -CATCustLedgerEntry."Remaining Amount") { }
+        }
+
+        add(VendorInfo)
+        {
+            column(CATVend_Remaining_Amt; -CATVendorLedgerEntry."Remaining Amount") { }
+        }
+
+    }
+
+    requestpage { }
+
+    /// <summary>
+    /// CATProcessVendor. Copied from ProcessVendor. 
+    /// It calculates finds the CATVendorLedgerEntry record and executes Calcfields to calculate flowfiels.
+    /// </summary>
+    /// <param name="GenJnlLine">VAR Record "Gen. Journal Line".</param>
+    local procedure CATProcessVendor(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        if GenJnlLine."Applies-to Doc. No." <> '' then begin
+            CATVendorLedgerEntry.Reset();
+            CATVendorLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Vendor No.");
+            CATVendorLedgerEntry.SetRange("Document Type", GenJnlLine."Applies-to Doc. Type");
+            CATVendorLedgerEntry.SetRange("Document No.", GenJnlLine."Applies-to Doc. No.");
+            CATVendorLedgerEntry.SetRange("Vendor No.", CATVendor."No.");
+            CATVendorLedgerEntry.SetRange(Open, true);
+            CATVendorLedgerEntry.FindFirst();
+            CATVendorLedgerEntry.CalcFields("Remaining Amt. (LCY)", "Remaining Amount");
+        end;
+    end;
+
+    /// <summary>
+    /// CATProcessCustomer. Copied from ProcessCustomer.
+    /// It finds the CATCustLedgerEntry record and executes Calcfields to calculate flowfiels.
+    /// </summary>
+    /// <param name="GenJnlLine">VAR Record "Gen. Journal Line".</param>
+    local procedure CATProcessCustomer(var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        if GenJnlLine."Applies-to Doc. No." <> '' then begin
+            CATCustLedgerEntry.Reset();
+            CATCustLedgerEntry.SetCurrentKey("Document No.", "Document Type", "Customer No.");
+            CATCustLedgerEntry.SetRange("Document Type", GenJnlLine."Applies-to Doc. Type");
+            CATCustLedgerEntry.SetRange("Document No.", GenJnlLine."Applies-to Doc. No.");
+            CATCustLedgerEntry.SetRange("Customer No.", CATCustomer."No.");
+            CATCustLedgerEntry.SetRange(Open, true);
+            CATCustLedgerEntry.FindFirst();
+            CATCustLedgerEntry.CalcFields("Remaining Amt. (LCY)", "Remaining Amount");
+        end;
+    end;
+
+    var
+        CATCustomer: Record Customer;
+        CATVendor: Record Vendor;
+        CATVendorLedgerEntry: Record "Vendor Ledger Entry";
+        CATCustLedgerEntry: Record "Cust. Ledger Entry";
+}

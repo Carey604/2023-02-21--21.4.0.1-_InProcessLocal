@@ -1,6 +1,7 @@
 pageextension 50559 "CAT Purchase Order List" extends "Purchase Order List" //9307
 {   // CAT.001 2021-08-20 CL - new page extension
     // CAT.002 2022-12-01 CL - add fields
+    // CAT.003 2023-01-12 CL - uncomment out field "CAT CEIC Equipment Tag No."
     layout
     {
         addbefore(Status)
@@ -12,11 +13,11 @@ pageextension 50559 "CAT Purchase Order List" extends "Purchase Order List" //93
                 Tooltip = 'Specifies the Fiix purchase order no.';
             }
             //>>CAT.002
-            // field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
-            // {
-            //     ApplicationArea = All;
-            //     ToolTip = 'Specifies the CEIC Equipment Tag No.';
-            // }
+            field("CAT CEIC Equipment Tag No."; Rec."CAT CEIC Equipment Tag No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the CEIC Equipment Tag No.';
+            }
             field("CAT Purch. Order Status Code"; Rec."CAT Purch. Order Status Code")
             {
                 ApplicationArea = All;

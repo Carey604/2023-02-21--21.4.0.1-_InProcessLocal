@@ -5,6 +5,7 @@ tableextension 50511 "CAT Purchase Line TabExt" extends "Purchase Line" //39
     // - add function to change No. and 
     // CAT.003 2021-08-19 CL - add field 50502
     // CAT.004 2022-11-25 CL - purchase approval amounts.
+    // CAT.005 2022-01-12 CL - change caption on field 50502
     fields
     {
         field(50500; "CAT Ship Date"; Date)
@@ -19,7 +20,8 @@ tableextension 50511 "CAT Purchase Line TabExt" extends "Purchase Line" //39
         //>>CAT.003
         field(50502; "CAT Fiix Work Order No."; Text[250])
         {
-            Caption = 'Fiix WO#';
+            //--CAT.005Caption = 'Fiix WO#';
+            Caption = 'Fiix PO/MOC/WO#'; //++CAT.005
             DataClassification = ToBeClassified;
         }
         //<<CAT.003

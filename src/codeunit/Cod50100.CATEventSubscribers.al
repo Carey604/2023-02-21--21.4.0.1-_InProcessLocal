@@ -8,6 +8,8 @@ codeunit 50100 "CAT Event Subscribers"
     // CAT.006 2022-11-30 CL - Purchase Header. Do not validate dimensions when Purchaser Code is updated.
     //  - OnBeforeReleasePurchaseDoc - check fields
     //  - OnBeforePurchQuoteToOrder - check fields
+    // CAT.007 2023-01-19 CL - subscriber to OnAfterSubstituteReport to replace report 11383 with 50106
+    // CAT.008 2023-01-23 CL - add check to CAT.006 OnBeforeReleasePurchaseDoc
 
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Job Jnl. Lines", 'OnAfterTransferTimeSheetDetailToJobJnlLine', '', false, false)]
@@ -200,8 +202,19 @@ codeunit 50100 "CAT Event Subscribers"
     var
         CATPurchaseTypeErrTxt: Label 'cannot be blank';
     begin
-        If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
-            PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+        //>>CAT.008
+        case PurchaseHeader."Document Type" of
+            PurchaseHeader."Document Type"::Quote, PurchaseHeader."Document Type"::Order:
+                begin
+                    If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+                        PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+                end;
+        end;
+        //<<CAT.008
+        //>>CAT.008 start delete
+        // If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+        //     PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+        //<<CAT.008
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order (Yes/No)", 'OnBeforePurchQuoteToOrder', '', false, false)]
@@ -214,6 +227,17 @@ codeunit 50100 "CAT Event Subscribers"
     end;
 
     //<<CAT.006
+    //>>CAT.007
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::ReportManagement, 'OnAfterSubstituteReport', '', false, false)]
+    local procedure OnAfterSubstituteReport(ReportId: Integer; RunMode: Option; RequestPageXml: Text; RecordRef: RecordRef; var NewReportId: Integer);
+    begin
+        case ReportId of
+            report::"ExportElecPayments - Word": //11383
+                NewReportId := 50106;
+        end;
+    end;
+    //<<CAT.007
+
     var
 
 }
