@@ -1,6 +1,7 @@
 codeunit 50102 "CAT Workflow Response Handling"
 {
     // CAT.001 2022-11-25 CL - new codeunit to handle new workflow responses. Created for adding functionality for a response to set Approved Amount on Purchase Header and Lines when Purchase Header is approved.
+    // CAT.002 2023-02-08 CL - add response predecessor for RUNWORKFLOWONSENDPURCHASEDOCFORAPPROVAL
 
     /// <summary>
     /// AddWorkflowResponsesToLibrary subscribes to cod1521.OnAddWorkflowResponsesToLibrary, which is called at the end of cod1521.CreateResponsesLibrary.
@@ -19,7 +20,7 @@ codeunit 50102 "CAT Workflow Response Handling"
 
     /// <summary>
     /// AddWorkflowResponsePredecessorsToLibrary subscribes to cod1521.OnAddWorkflowResponsePredecessorsToLibrary, which is called at the end of cod1521.AddResponsePredecessors.
-    /// Add code here to add the event predecessors similar to how cod1520.AddResponsePrecessors does it.
+    /// Add code here to add the event predecessors similar to how cod1521.AddResponsePrecessors does it.
     /// </summary>
     /// <param name="ResponseFunctionName">Code[128].</param>
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsePredecessorsToLibrary', '', false, false)]
@@ -33,6 +34,11 @@ codeunit 50102 "CAT Workflow Response Handling"
                 begin
                     WorkflowResponseHandling.AddResponsePredecessor(CATCalcAndSetAmountOverApprovedPurchaseAmountsCode(), WorkflowEventHandling.RunWorkflowOnSendPurchaseDocForApprovalCode());
                     WorkflowResponseHandling.AddResponsePredecessor(CATSetApprovedPurchaseAmountsCode(), WorkflowEventHandling.RunWorkflowOnApproveApprovalRequestCode());
+                    //>>CAT.002 - add predecessor WorkflowEventHandling.RunWorkflowOnSendPurchaseDocForApprovalCode(), which uses PurchDocSendForApprovalEventDescTxt: Label 'Approval of a purchase document is requested.';
+                    WorkflowResponseHandling.AddResponsePredecessor(WorkflowResponseHandling.AllowRecordUsageCode(), WorkflowEventHandling.RunWorkflowOnSendPurchaseDocForApprovalCode()); //'Remove record restriction.'
+                    WorkflowResponseHandling.AddResponsePredecessor(WorkflowResponseHandling.ReleaseDocumentCode(), WorkflowEventHandling.RunWorkflowOnSendPurchaseDocForApprovalCode()); //ReleaseDocumentTxt: Label 'Release the document.'
+                    WorkflowResponseHandling.AddResponsePredecessor(CATSetApprovedPurchaseAmountsCode(), WorkflowEventHandling.RunWorkflowOnSendPurchaseDocForApprovalCode());
+                    //<<CAT.002
                 end;
         end;
     end;

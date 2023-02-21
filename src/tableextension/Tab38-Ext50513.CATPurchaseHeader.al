@@ -12,7 +12,7 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
     // - New "Purchase Requisition No." field to store original "No."" value when requisition is converted to quote.
     // - new field "CAT Purch. Order Status Code"
     // - new CAT Purchase Type field
-
+    // CAT.007 2023-02-08 CL - remove check on CAT Purchase Type field when converting to quote
     fields
     {
         field(50000; "CAT Blanket Order Version No."; Integer)
@@ -315,10 +315,12 @@ tableextension 50513 "CAT Purchase Header" extends "Purchase Header" //38
         Rec.TestField("Document Type", Rec."Document Type"::Quote);
         Rec.TestField("No.");
         Rec.TestField("CAT Requisition", true);
-        //>>CAT.006
-        if Rec."CAT Purchase Type" = Rec."CAT Purchase Type"::" " then
-            Rec.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
-        //<<CAT.006
+        //>>CAT.007 start delete
+        // //>>CAT.006
+        // if Rec."CAT Purchase Type" = Rec."CAT Purchase Type"::" " then
+        //     Rec.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+        // //<<CAT.006
+        //<<CAT.007
 
         //what kind of test for the user who is trying to change to quote? Put code here.
 

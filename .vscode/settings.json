@@ -7,4 +7,7 @@
     "CRS.FileNamePatternPageCustomizations": "<ObjectTypeShort><BaseId>-Ext<ObjectId>.<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
     "CRS.ExtensionObjectNamePattern": "<Prefix><BaseName>",
     "CRS.RenameWithGit": true,
+    "cSpell.words": [
+        "Continia"
+    ],
 }

@@ -10,6 +10,7 @@ codeunit 50100 "CAT Event Subscribers"
     //  - OnBeforePurchQuoteToOrder - check fields
     // CAT.007 2023-01-19 CL - subscriber to OnAfterSubstituteReport to replace report 11383 with 50106
     // CAT.008 2023-01-23 CL - add check to CAT.006 OnBeforeReleasePurchaseDoc
+    // CAT.009 2023-02-08 CL - remove CAT.008 code
 
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Job Jnl. Lines", 'OnAfterTransferTimeSheetDetailToJobJnlLine', '', false, false)]
@@ -197,34 +198,36 @@ codeunit 50100 "CAT Event Subscribers"
         IsHandled := PurchaseHeader."CAT Purch. Code Dim. IsHandled";
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Purchase Document", 'OnBeforeReleasePurchaseDoc', '', false, false)]
-    local procedure OnBeforeReleasePurchaseDoc(var PurchaseHeader: Record "Purchase Header"; PreviewMode: Boolean; var SkipCheckReleaseRestrictions: Boolean; var IsHandled: Boolean);
-    var
-        CATPurchaseTypeErrTxt: Label 'cannot be blank';
-    begin
-        //>>CAT.008
-        case PurchaseHeader."Document Type" of
-            PurchaseHeader."Document Type"::Quote, PurchaseHeader."Document Type"::Order:
-                begin
-                    If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
-                        PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
-                end;
-        end;
-        //<<CAT.008
-        //>>CAT.008 start delete
-        // If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
-        //     PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
-        //<<CAT.008
-    end;
+    //>>CAT.009 - start delete
+    // [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Purchase Document", 'OnBeforeReleasePurchaseDoc', '', false, false)]
+    // local procedure OnBeforeReleasePurchaseDoc(var PurchaseHeader: Record "Purchase Header"; PreviewMode: Boolean; var SkipCheckReleaseRestrictions: Boolean; var IsHandled: Boolean);
+    // var
+    //     CATPurchaseTypeErrTxt: Label 'cannot be blank';
+    // begin
+    //     //>>CAT.008
+    //     case PurchaseHeader."Document Type" of
+    //         PurchaseHeader."Document Type"::Quote, PurchaseHeader."Document Type"::Order:
+    //             begin
+    //                 If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+    //                     PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+    //             end;
+    //     end;
+    //     //<<CAT.008
+    //     //>>CAT.008 start delete
+    //     // If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+    //     //     PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+    //     //<<CAT.008
+    // end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order (Yes/No)", 'OnBeforePurchQuoteToOrder', '', false, false)]
-    local procedure OnBeforePurchQuoteToOrder(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean);
-    var
-        CATPurchaseTypeErrTxt: Label 'cannot be blank';
-    begin
-        If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
-            PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
-    end;
+    // [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Quote to Order (Yes/No)", 'OnBeforePurchQuoteToOrder', '', false, false)]
+    // local procedure OnBeforePurchQuoteToOrder(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean);
+    // var
+    //     CATPurchaseTypeErrTxt: Label 'cannot be blank';
+    // begin
+    //     If PurchaseHeader."CAT Purchase Type" = PurchaseHeader."CAT Purchase Type"::" " then
+    //         PurchaseHeader.FieldError("CAT Purchase Type", CATPurchaseTypeErrTxt);
+    //end;
+    //<<CAT.009 - end delete
 
     //<<CAT.006
     //>>CAT.007

@@ -11,7 +11,7 @@ codeunit 50103 "CAT InstallCodeunit"
         //error('AppModuleInfo.DataVersion:%1', AppModuleInfo.DataVersion);
         NavApp.GetCurrentModuleInfo(AppModuleInfo); //The version of the app
 
-        if AppModuleInfo.DataVersion < Version.Create(20, 3, 0, 1) then
+        if AppModuleInfo.DataVersion <= Version.Create(21, 3, 0, 4) then
             FreshInstall()
         else
             FreshInstall();
