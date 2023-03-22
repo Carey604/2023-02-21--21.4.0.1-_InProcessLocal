@@ -3,6 +3,7 @@ pageextension 50523 "CAT Purchase Order" extends "Purchase Order" //50
     // CAT.002 2020-05-12 CL - add field and actions
     // CAT.003 2021-08-20 CL - add field
     // CAT.004 2022-12-01 CL - add fields
+    // CAT.005 2023-02-21 CL - add fields
     layout
     {
         modify("Buy-from Contact")
@@ -111,6 +112,38 @@ pageextension 50523 "CAT Purchase Order" extends "Purchase Order" //50
             }
         }
         //<<CAT.002
+        //>>CAT.005
+        addlast(General)
+        {
+            field("CAT Approved Amount"; Rec."CAT Approved Amount")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Specifies the amount previously approved. This value can be calculated and setby certain workflows.';
+            }
+            field("CAT Amt. Over Approved Amt."; Rec."CAT Amt. Over Approved Amt.")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                Visible = false;
+                ToolTip = 'Specifies the amount by which the order is greater than the approved amount. This value can be calculated and set by certain workflows.';
+            }
+            field("CAT Line Approved Amount"; Rec."CAT Line Approved Amount")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                Visible = false;
+                ToolTip = 'Specifies the sum of amounts previously approved on purchase lines. This value can be calculated and setby certain workflows.';
+            }
+            field("CAT Line Amt. Over Appr. Amt."; Rec."CAT Line Amt. Over Appr. Amt.")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                Visible = false;
+                ToolTip = 'Specifies the sum of order line amounts by which the order line''s amount is greater than the lines''s previously approved amount. This value can be calculated and set by certain workflows.';
+            }
+        }
+        //<<CAT.005
     }
     actions
     {

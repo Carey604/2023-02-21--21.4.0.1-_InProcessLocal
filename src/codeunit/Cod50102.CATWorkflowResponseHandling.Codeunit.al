@@ -2,6 +2,7 @@ codeunit 50102 "CAT Workflow Response Handling"
 {
     // CAT.001 2022-11-25 CL - new codeunit to handle new workflow responses. Created for adding functionality for a response to set Approved Amount on Purchase Header and Lines when Purchase Header is approved.
     // CAT.002 2023-02-08 CL - add response predecessor for RUNWORKFLOWONSENDPURCHASEDOCFORAPPROVAL
+    // CAT.003 2023-03-02 CL - allow PurchaseHeader."CAT Amt. Over Approved Amt." to go negative.
 
     /// <summary>
     /// AddWorkflowResponsesToLibrary subscribes to cod1521.OnAddWorkflowResponsesToLibrary, which is called at the end of cod1521.CreateResponsesLibrary.
@@ -132,15 +133,15 @@ codeunit 50102 "CAT Workflow Response Handling"
             if PurchaseLine.FindSet() then
                 repeat
                     PurchaseLine."CAT Amt. Over Approved Amt." := PurchaseLine.Amount - PurchaseLine."CAT Approved Amount";
-                    if PurchaseLine."CAT Amt. Over Approved Amt." < 0 then
-                        PurchaseLine."CAT Amt. Over Approved Amt." := 0;
+                    //--CAT.003if PurchaseLine."CAT Amt. Over Approved Amt." < 0 then
+                    //--CAT.003    PurchaseLine."CAT Amt. Over Approved Amt." := 0;
                     PurchaseLine.Modify(false);
                 until PurchaseLine.Next() = 0;
 
             PurchaseHeader.CalcFields(Amount);
             PurchaseHeader."CAT Amt. Over Approved Amt." := PurchaseHeader.Amount - PurchaseHeader."CAT Approved Amount";
-            if PurchaseHeader."CAT Amt. Over Approved Amt." < 0 then
-                PurchaseHeader."CAT Amt. Over Approved Amt." := 0;
+            //--CAT.003if PurchaseHeader."CAT Amt. Over Approved Amt." < 0 then
+            //--CAT.003    PurchaseHeader."CAT Amt. Over Approved Amt." := 0;
             PurchaseHeader.Modify();
             ResponseExecuted := true;
         end;
