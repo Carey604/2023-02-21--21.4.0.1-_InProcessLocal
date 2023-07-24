@@ -5,6 +5,9 @@ report 50100 "CAT Standard Purchase - Order"
     //CAT.003 2020-01-22 CL - Add Salesperson/Purchaser and date format changes
     //CAT.004 2020-05-12 CL - add fields 50000 50001
     //CAT.005 2021-04-29 CL - change usage of formataddr for bill-to address array
+    //CAT.006 2023-05-05 CL - v22 upgrade. Cross-Reference No. deprecated and replaced by Item Reference.
+    //      Keep columns and column fieldnames the same so that existing layouts will work. 
+
     RDLCLayout = './layouts/StandardPurchaseOrder.rdlc';
     WordLayout = './layouts/Carbon Engineering Purchase Order.docx';
     Caption = 'Purchase - Order';
@@ -480,7 +483,8 @@ report 50100 "CAT Standard Purchase - Order"
                 column(Type_PurchLine; Format(Type, 0, 2))
                 {
                 }
-                column(No_PurchLine; "No.")
+                //--CAT.006column(No_PurchLine; "No.")
+                column(No_PurchLine; ItemNo) //++CAT.006
                 {
                 }
                 column(Desc_PurchLine; Description)
@@ -608,8 +612,17 @@ report 50100 "CAT Standard Purchase - Order"
                     TotalSubTotal += "Line Amount";
                     TotalInvoiceDiscountAmount -= "Inv. Discount Amount";
                     TotalAmount += Amount;
-                    if "Cross-Reference No." <> '' then
-                        "No." := "Cross-Reference No.";
+                    //--CAT.006if "Cross-Reference No." <> '' then
+                    //--CAT.006    "No." := "Cross-Reference No.";
+                    //>>CAT.006
+                    ItemNo := "No.";
+
+                    if "Vendor Item No." <> '' then
+                        ItemNo := "Vendor Item No.";
+
+                    if "Item Reference No." <> '' then
+                        ItemNo := "Item Reference No.";
+                    //<<CAT.006
 
                     FormatDocument.SetPurchaseLine("Purchase Line", FormattedQuanitity, FormattedDirectUnitCost);
 
@@ -1235,6 +1248,7 @@ report 50100 "CAT Standard Purchase - Order"
         TotalAmount: Decimal;
         TotalInvoiceDiscountAmount: Decimal;
         DocumentTitleLbl: Label 'Purchase Order';
+        ItemNo: Text; //++CAT.006
         TaxAmount: Decimal;
         CompanyLogoPosition: Integer;
         ReceivebyCaptionLbl: Label 'Receive By';

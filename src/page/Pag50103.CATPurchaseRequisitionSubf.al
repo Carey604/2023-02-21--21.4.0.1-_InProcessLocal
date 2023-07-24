@@ -1160,9 +1160,11 @@ page 50103 "CAT Purchase Requisition Subf."
 
     local procedure SetItemReferenceVisibility()
     var
-        ItemReferenceMgt: Codeunit "Item Reference Management";
+        //--CAT.005ItemReferenceMgt: Codeunit "Item Reference Management";
+        ItemReference: Record "Item Reference"; //++CAT.005
     begin
-        ItemReferenceVisible := ItemReferenceMgt.IsEnabled();
+        //--CAT.005ItemReferenceVisible := ItemReferenceMgt.IsEnabled();
+        ItemReferenceVisible := not ItemReference.IsEmpty(); //++CAT.005
     end;
 
     local procedure SetDefaultType()

@@ -7,6 +7,7 @@ page 50105 "CAT Purchase Requisitions"
     //- is a copy of Purchase Quotes filtered on new field "CAT Requisition" and New action calls new card page.
     //- copied from page 9306. Original code is copied to bottom of this file.
     // CAT.002 2022-12-02 CL - add fields
+    // CAT.003 2023-05-05 CL - retrofit for v22 upgrade
 
     AdditionalSearchTerms = 'rfq,request for quote,purchase requisition';
     ApplicationArea = Suite;
@@ -341,10 +342,14 @@ page 50105 "CAT Purchase Requisitions"
 
                     trigger OnAction()
                     var
-                        WorkflowsEntriesBuffer: Record "Workflows Entries Buffer";
+                        //--CAT.005WorkflowsEntriesBuffer: Record "Workflows Entries Buffer";
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt."; //++CAT.005
                     begin
-                        WorkflowsEntriesBuffer.RunWorkflowEntriesPage(
-                            rec.RecordId, DATABASE::"Purchase Header", rec."Document Type".AsInteger(), rec."No.");
+                        //>>CAT.005 start delete
+                        // WorkflowsEntriesBuffer.RunWorkflowEntriesPage(
+                        //     rec.RecordId, DATABASE::"Purchase Header", rec."Document Type".AsInteger(), rec."No.");
+                        //<<CAT.005
+                        ApprovalsMgmt.OpenApprovalsPurchase(Rec); //++CAT.005
                     end;
                 }
             }

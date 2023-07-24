@@ -10,6 +10,7 @@ page 50102 "CAT Purchase Requisition"
     // - new notification when header is inserted
     // CAT.003 2021-08-20 CL - add field Fiix Purchase Order No.
     // CAT.004 2022-12-02 CL - add fields
+    // CAT.005 2023-05-05 CL - v22 upgrade. OnAfterValidateBuyFromVendorNo parameters changed.
 
     //--CAT.001Caption = 'Purchase Quote';
     //>>CAT.001
@@ -73,8 +74,9 @@ page 50102 "CAT Purchase Requisition"
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
-                        if LookupBuyfromVendorName() then
-                            CurrPage.Update();
+                        //--CAT.005if LookupBuyfromVendorName() then
+                        OnAfterValidateBuyFromVendorNo(Rec, xRec); //++CAT.005
+                        CurrPage.Update();
                     end;
                 }
                 group("Buy-from")
@@ -1001,10 +1003,14 @@ page 50102 "CAT Purchase Requisition"
 
                     trigger OnAction()
                     var
-                        WorkflowsEntriesBuffer: Record "Workflows Entries Buffer";
+                        //--CAT.005WorkflowsEntriesBuffer: Record "Workflows Entries Buffer";
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt."; //++CAT.005
                     begin
-                        WorkflowsEntriesBuffer.RunWorkflowEntriesPage(
-                            RecordId, DATABASE::"Purchase Header", "Document Type".AsInteger(), "No.");
+                        //>>CAT.005 start delete
+                        // WorkflowsEntriesBuffer.RunWorkflowEntriesPage(
+                        //     RecordId, DATABASE::"Purchase Header", "Document Type".AsInteger(), "No.");
+                        //<<CAT.005
+                        ApprovalsMgmt.OpenApprovalsPurchase(Rec);
                     end;
                 }
                 action(DocAttach)
